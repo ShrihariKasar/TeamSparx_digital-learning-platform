@@ -127,19 +127,19 @@ http://127.0.0.1:5000/
 ### 🏠 Home / Features
 
 <p align="center">
-  <img src="static/images/screenshots/features.png" width="600" alt="Features Page">
+  <img src="https://github.com/ShrihariKasar/TeamSparx_digital-learning-platform/blob/main/templates/Screenshot%20(317).png" width="600" alt="Features Page">
 </p>
 
 ### 👩‍🏫 Teacher Dashboard
 
 <p align="center">
-  <img src="static/images/screenshots/dashboard.png" width="600" alt="Teacher Dashboard">
+  <img src="https://github.com/ShrihariKasar/TeamSparx_digital-learning-platform/blob/main/templates/Screenshot%20(318).png" width="600" alt="Teacher Dashboard">
 </p>
 
-### 📝 Quiz Interface
+### 📝 Contents Interface
 
 <p align="center">
-  <img src="static/images/screenshots/quiz.png" width="600" alt="Quiz Page">
+  <img src="https://github.com/ShrihariKasar/TeamSparx_digital-learning-platform/blob/main/templates/Screenshot%20(319).png" width="600" alt="Quiz Page">
 </p>
 
 ---
