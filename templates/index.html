@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% block title %}Home | Digital Learning Platform{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<div class="p-5 mb-4 bg-light rounded-3 shadow-sm">
+  <div class="container py-5 text-center">
+    <h1 class="display-5 fw-bold text-primary">
+      Welcome to DigiLearn Nabha
+    </h1>
+    <p class="col-lg-8 mx-auto fs-5 text-muted">
+      A digital learning platform designed for rural school students in Nabha. 
+      Learn anytime, anywhere with offline-first features, engaging content, and teacher support.
+    </p>
+    {% if not session.get('username') %}
+      <a href="{{ url_for('login') }}" class="btn btn-lg btn-primary mt-3">
+        <i class="fas fa-sign-in-alt"></i> Get Started
+      </a>
+    {% endif %}
+  </div>
+</div>
+<!-- Features Section -->
+<div class="container my-5">
+  <h2 class="text-center mb-5 fw-bold display-5">Key Features</h2>
+  
+  <!-- Centering row content -->
+  <div class="row g-4 justify-content-center">
+
+    <!-- Feature Card Template -->
+    <div class="col-md-4 d-flex">
+      <div class="card h-100 border-0 shadow-lg feature-card text-center p-4 flex-fill">
+        <div class="icon mb-3">
+          <i class="fas fa-book fa-3x text-primary feature-icon"></i>
+        </div>
+        <h5 class="card-title fw-bold">Learning Content</h5>
+        <p class="card-text text-muted">Access localized, curriculum-aligned study materials in your language, available offline.</p>
+        <a href="{{ url_for('list_content') }}" class="stretched-link"></a>
+      </div>
+    </div>
+
+    <div class="col-md-4 d-flex">
+      <div class="card h-100 border-0 shadow-lg feature-card text-center p-4 flex-fill">
+        <div class="icon mb-3">
+          <i class="fas fa-question-circle fa-3x text-success feature-icon"></i>
+        </div>
+        <h5 class="card-title fw-bold">Interactive Quizzes</h5>
+        <p class="card-text text-muted">Practice with quizzes and get instant feedback to improve your learning outcomes.</p>
+        <a href="{{ url_for('list_quizzes') }}" class="stretched-link"></a>
+      </div>
+    </div>
+
+    <div class="col-md-4 d-flex">
+      <div class="card h-100 border-0 shadow-lg feature-card text-center p-4 flex-fill">
+        <div class="icon mb-3">
+          <i class="fas fa-chalkboard-teacher fa-3x text-warning feature-icon"></i>
+        </div>
+        <h5 class="card-title fw-bold">Teacher Dashboard</h5>
+        <p class="card-text text-muted">Teachers can track student progress, assign lessons, and provide guidance.</p>
+        <a href="{{ url_for('teacher_dashboard') }}" class="stretched-link"></a>
+      </div>
+    </div>
+
+    <!-- Remaining 3 cards (Community, Support, Progress Monitoring) -->
+    <div class="col-md-4 d-flex">
+      <div class="card h-100 border-0 shadow-lg feature-card text-center p-4 flex-fill">
+        <div class="icon mb-3">
+          <i class="fas fa-users fa-3x text-info feature-icon"></i>
+        </div>
+        <h5 class="card-title fw-bold">Community Learning</h5>
+        <p class="card-text text-muted">Engage with peers, share knowledge, and grow together through discussion forums.</p>
+        <a href="{{ url_for('community_forum') }}" class="stretched-link"></a>
+      </div>
+    </div>
+
+    <div class="col-md-4 d-flex">
+      <div class="card h-100 border-0 shadow-lg feature-card text-center p-4 flex-fill">
+        <div class="icon mb-3">
+          <i class="fas fa-life-ring fa-3x text-danger feature-icon"></i>
+        </div>
+        <h5 class="card-title fw-bold">Support System</h5>
+        <p class="card-text text-muted">Get help with FAQs, troubleshooting, and support requests in your local language.</p>
+        <a href="{{ url_for('support_home') }}" class="stretched-link"></a>
+      </div>
+    </div>
+
+    <div class="col-md-4 d-flex">
+      <div class="card h-100 border-0 shadow-lg feature-card text-center p-4 flex-fill">
+        <div class="icon mb-3">
+          <i class="fas fa-chart-line fa-3x text-secondary feature-icon"></i>
+        </div>
+        <h5 class="card-title fw-bold">Progress Monitoring</h5>
+        <p class="card-text text-muted">Students and teachers can track learning outcomes with analytics and reports.</p>
+        <a href="{{ url_for('monitor') }}" class="stretched-link"></a>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- Call to Action -->
+<div class="text-center my-5">
+  <h3 class="fw-bold">Ready to Start Learning?</h3>
+  <p class="text-muted">Join DigiLearn Nabha and explore a new way of education.</p>
+  {% if not session.get('username') %}
+    <a href="{{ url_for('login') }}" class="btn btn-lg btn-success">
+      <i class="fas fa-user-plus"></i> Login / Sign Up
+    </a>
+  {% else %}
+    <a href="{{ url_for('list_content') }}" class="btn btn-lg btn-success">
+      <i class="fas fa-arrow-right"></i> Go to Dashboard
+    </a>
+  {% endif %}
+</div>
+<!-- Chatbot JS -->
+<script>
+  const chatbotResponses = {
+    "home": "Welcome to DigiLearn Nabha! Explore content, quizzes, community, and more.",
+    "dashboard": "Your Dashboard shows your progress, upcoming quizzes, and assigned content.",
+    "content": "Here you can access all learning materials. Teachers can upload new lessons here.",
+    "quizzes": "Practice with interactive quizzes. Select a quiz and submit to get instant feedback.",
+    "community": "Engage with peers, ask questions, share knowledge, and collaborate in the forum.",
+    "support": "Need help? Access FAQs, troubleshoot issues, or submit a support ticket here.",
+    "monitor": "Track your learning outcomes and progress with analytics and reports."
+  };
+
+  let chatModalInstance;
+
+  function openChat() {
+    const chatModalEl = document.getElementById('chatbotModal');
+    chatModalInstance = new bootstrap.Modal(chatModalEl);
+    chatModalInstance.show();
+
+    // Focus input after modal opens
+    chatModalEl.addEventListener('shown.bs.modal', () => {
+      const chatInput = document.getElementById('chatInput');
+      chatInput.focus();
+    }, { once: true });
+  }
+
+  function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const chatBody = document.getElementById('chatBody');
+    const message = input.value.trim().toLowerCase();
+
+    if (!message) return;
+
+    // Append user message
+    chatBody.innerHTML += `<div class="chat-message text-end mb-2"><strong>You:</strong> ${input.value}</div>`;
+
+    // Determine response
+    let response = "Sorry, I can guide you on Home, Dashboard, Content, Quizzes, Community, Support, and Monitor.";
+    for (const key in chatbotResponses) {
+      if (message.includes(key)) {
+        response = chatbotResponses[key];
+        break;
+      }
+    }
+
+    // Append bot response
+    chatBody.innerHTML += `<div class="chat-message text-start mb-2"><strong>Guide:</strong> ${response}</div>`;
+    chatBody.scrollTop = chatBody.scrollHeight;
+    input.value = '';
+    input.focus();
+  }
+
+  // Press Enter to send
+  document.addEventListener('DOMContentLoaded', () => {
+    const chatInput = document.getElementById('chatInput');
+    chatInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+        e.preventDefault();
+      }
+    });
+  });
+</script>
+{% endblock %}

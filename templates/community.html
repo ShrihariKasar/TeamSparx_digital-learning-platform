@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Community | Digital Learning Platform{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+
+  <!-- Community Header -->
+  <div class="text-center mb-4">
+    <h2 class="fw-bold text-primary">Community Learning</h2>
+    <p class="text-muted fs-5">Engage with peers, ask questions, and share knowledge.</p>
+  </div>
+
+  <!-- New Post Form -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('community_forum') }}">
+        <div class="mb-3">
+          <label for="post_title" class="form-label">Post Title</label>
+          <input type="text" class="form-control" id="post_title" name="title" required>
+        </div>
+        <div class="mb-3">
+          <label for="post_content" class="form-label">Content</label>
+          <textarea class="form-control" id="post_content" name="content" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-plus-circle"></i> Post
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Posts List -->
+  <div class="row g-4">
+    {% for post in posts %}
+    <div class="col-md-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h5 class="card-title">{{ post.title }}</h5>
+          <p class="card-text">
+            {{ post.content[:150] }}{% if post.content|length > 150 %}...{% endif %}
+          </p>
+          <p class="text-muted small">
+            Posted by {{ post.author }} on {{ post.date_posted.strftime('%d %b %Y') }}
+          </p>
+          <a href="{{ url_for('community_forum', post_id=post.id) }}" class="stretched-link"></a>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+      <p class="text-muted text-center">No posts yet. Be the first to post!</p>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

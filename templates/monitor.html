@@ -1,0 +1,132 @@
+{% extends "dashboard.html" %}
+{% block title %}Analytics | Digital Learning Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- Header -->
+  <div class="p-4 mb-4 bg-light rounded-3 shadow-sm text-center">
+    <h2 class="fw-bold text-primary">Analytics & Insights</h2>
+    <p class="text-muted fs-5">Track learning progress, quiz performance, and overall activity.</p>
+  </div>
+
+  <!-- Overview Stats -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center p-3">
+        <i class="fas fa-chart-line fa-2x text-primary mb-2"></i>
+        <h5 class="card-title">Overall Progress</h5>
+        <p class="card-text fs-5">{{ stats.progress|default('0%') }}</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center p-3">
+        <i class="fas fa-book fa-2x text-success mb-2"></i>
+        <h5 class="card-title">Lessons Completed</h5>
+        <p class="card-text fs-5">{{ stats.lessons_completed|default(0) }}</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center p-3">
+        <i class="fas fa-clipboard-check fa-2x text-warning mb-2"></i>
+        <h5 class="card-title">Quizzes Completed</h5>
+        <p class="card-text fs-5">{{ stats.quizzes_completed|default(0) }}</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center p-3">
+        <i class="fas fa-users fa-2x text-info mb-2"></i>
+        <h5 class="card-title">Active Students</h5>
+        <p class="card-text fs-5">{{ stats.active_students|default(0) }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="row g-4 mb-4">
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0 p-4">
+        <h5 class="card-title mb-3"><i class="fas fa-chart-line"></i> Learning Progress Over Time</h5>
+        <canvas id="progressChart" height="200"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0 p-4">
+        <h5 class="card-title mb-3"><i class="fas fa-poll"></i> Quiz Performance</h5>
+        <canvas id="quizChart" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm border-0 p-4">
+        <h5 class="card-title mb-3"><i class="fas fa-users"></i> Class Participation</h5>
+        <canvas id="classChart" height="150"></canvas>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Learning Progress Chart
+  const ctxProgress = document.getElementById('progressChart').getContext('2d');
+  const progressChart = new Chart(ctxProgress, {
+    type: 'line',
+    data: {
+      labels: {{ stats.weeks|default(['Week 1','Week 2','Week 3','Week 4'])|tojson }},
+      datasets: [{
+        label: 'Lessons Completed',
+        data: {{ stats.progress_data|default([5, 10, 15, 20])|tojson }},
+        backgroundColor: 'rgba(54,162,235,0.2)',
+        borderColor: 'rgba(54,162,235,1)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4
+      }]
+    }
+  });
+
+  // Quiz Performance Chart
+  const ctxQuiz = document.getElementById('quizChart').getContext('2d');
+  const quizChart = new Chart(ctxQuiz, {
+    type: 'bar',
+    data: {
+      labels: {{ stats.quiz_labels|default(['Quiz 1','Quiz 2','Quiz 3','Quiz 4'])|tojson }},
+      datasets: [{
+        label: 'Average Scores',
+        data: {{ stats.quiz_scores|default([80, 85, 90, 75])|tojson }},
+        backgroundColor: 'rgba(255,206,86,0.7)',
+        borderColor: 'rgba(255,206,86,1)',
+        borderWidth: 1
+      }]
+    }
+  });
+
+  // Class Participation Chart
+  const ctxClass = document.getElementById('classChart').getContext('2d');
+  const classChart = new Chart(ctxClass, {
+    type: 'doughnut',
+    data: {
+      labels: {{ stats.class_labels|default(['Active','Inactive'])|tojson }},
+      datasets: [{
+        label: 'Participation',
+        data: {{ stats.class_data|default([60,40])|tojson }},
+        backgroundColor: [
+          'rgba(75,192,192,0.7)',
+          'rgba(201,203,207,0.7)'
+        ],
+        borderColor: [
+          'rgba(75,192,192,1)',
+          'rgba(201,203,207,1)'
+        ],
+        borderWidth: 1
+      }]
+    }
+  });
+</script>
+
+{% endblock %}

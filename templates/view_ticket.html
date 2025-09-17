@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}View Ticket | Digital Learning Platform{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+
+  <!-- Ticket Header -->
+  <div class="text-center mb-4">
+    <h2 class="fw-bold text-primary">Support Ticket</h2>
+    <p class="text-muted fs-5">Detailed view of your support request.</p>
+  </div>
+
+  <!-- Ticket Card -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h4 class="card-title text-dark fw-bold">{{ ticket.subject }}</h4>
+      <p class="card-text mt-3">{{ ticket.message }}</p>
+
+      <hr>
+
+      <p class="text-muted small mb-1">
+        <strong>Status:</strong> {{ ticket.status }}
+      </p>
+      <p class="text-muted small">
+        <strong>Submitted by:</strong> {{ ticket.created_by }} <br>
+        <strong>Date:</strong> {{ ticket.created_at.strftime('%d %B %Y, %I:%M %p') }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Back Button -->
+  <div class="mt-4">
+    <a href="{{ url_for('support_home') }}" class="btn btn-secondary">
+      <i class="fas fa-arrow-left"></i> Back to Support
+    </a>
+  </div>
+
+</div>
+{% endblock %}

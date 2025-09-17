@@ -1,0 +1,157 @@
+{% extends "dashboard.html" %}
+{% block title %}Teacher Dashboard | Digital Learning Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- Welcome Banner -->
+  <div class="p-4 mb-4 bg-light rounded-3 shadow-sm text-center">
+    <h2 class="fw-bold text-primary">Hello, {{ session.get('username') }}!</h2>
+    <p class="text-muted fs-5">Here’s an overview of your classes and students’ performance.</p>
+  </div>
+
+  <!-- Quick Stats for Teacher -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center p-3">
+        <i class="fas fa-chalkboard fa-2x text-primary mb-2"></i>
+        <h5 class="card-title">Classes</h5>
+        <p class="card-text fs-5">{{ stats.classes_count|default(0) }}</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center p-3">
+        <i class="fas fa-user-graduate fa-2x text-success mb-2"></i>
+        <h5 class="card-title">Students</h5>
+        <p class="card-text fs-5">{{ stats.students_count|default(0) }}</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center p-3">
+        <i class="fas fa-clipboard-list fa-2x text-warning mb-2"></i>
+        <h5 class="card-title">Pending Quizzes</h5>
+        <p class="card-text fs-5">{{ stats.pending_quizzes|default(0) }}</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center p-3">
+        <i class="fas fa-chart-line fa-2x text-info mb-2"></i>
+        <h5 class="card-title">Overall Progress</h5>
+        <p class="card-text fs-5">{{ stats.avg_progress|default("0%") }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Teacher Actions -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-3">
+      <a href="{{ url_for('list_content') }}" class="text-decoration-none">
+        <div class="card h-100 shadow-sm border-0 text-center p-4">
+          <i class="fas fa-book-open fa-3x text-primary mb-3"></i>
+          <h5 class="card-title">Manage Lessons</h5>
+          <p class="text-muted">Add, edit, or delete curriculum-aligned content</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="{{ url_for('list_quizzes') }}" class="text-decoration-none">
+        <div class="card h-100 shadow-sm border-0 text-center p-4">
+          <i class="fas fa-clipboard-check fa-3x text-success mb-3"></i>
+          <h5 class="card-title">Manage Quizzes</h5>
+          <p class="text-muted">Create new quizzes or review student submissions</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="{{ url_for('monitor') }}" class="text-decoration-none">
+        <div class="card h-100 shadow-sm border-0 text-center p-4">
+          <i class="fas fa-chart-pie fa-3x text-warning mb-3"></i>
+          <h5 class="card-title">Class Analytics</h5>
+          <p class="text-muted">Monitor student performance across all classes</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="{{ url_for('support_home') }}" class="text-decoration-none">
+        <div class="card h-100 shadow-sm border-0 text-center p-4">
+          <i class="fas fa-headset fa-3x text-info mb-3"></i>
+          <h5 class="card-title">Support</h5>
+          <p class="text-muted">Get help or resolve technical issues</p>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Analytics Charts -->
+  <div class="row g-4 mb-4">
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0 p-4">
+        <h5 class="card-title mb-3"><i class="fas fa-chart-bar"></i> Class Progress Over Time</h5>
+        <canvas id="classProgressChart" height="200"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0 p-4">
+        <h5 class="card-title mb-3"><i class="fas fa-poll"></i> Quiz Scores</h5>
+        <canvas id="teacherQuizChart" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Student Activity -->
+  <div class="row g-4 mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm border-0 p-4">
+        <h5 class="card-title mb-3"><i class="fas fa-user-clock"></i> Recent Student Activity</h5>
+        <ul class="list-group list-group-flush">
+          {% for activity in recent_student_activity %}
+            <li class="list-group-item">
+              <i class="fas fa-circle-notch text-primary me-2"></i> {{ activity }}
+            </li>
+          {% else %}
+            <li class="list-group-item text-muted">No recent student activity</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctxClass = document.getElementById('classProgressChart').getContext('2d');
+  new Chart(ctxClass, {
+    type: 'line',
+    data: {
+      labels: ['Week 1','Week 2','Week 3','Week 4'],
+      datasets: [{
+        label: 'Average Class Progress',
+        data: [65, 70, 80, 85],
+        backgroundColor: 'rgba(54,162,235,0.2)',
+        borderColor: 'rgba(54,162,235,1)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4
+      }]
+    }
+  });
+
+  const ctxQuiz = document.getElementById('teacherQuizChart').getContext('2d');
+  new Chart(ctxQuiz, {
+    type: 'bar',
+    data: {
+      labels: ['Quiz 1','Quiz 2','Quiz 3','Quiz 4'],
+      datasets: [{
+        label: 'Average Scores',
+        data: [78, 82, 90, 85],
+        backgroundColor: 'rgba(255,206,86,0.7)',
+        borderColor: 'rgba(255,206,86,1)',
+        borderWidth: 1
+      }]
+    }
+  });
+</script>
+
+{% endblock %}

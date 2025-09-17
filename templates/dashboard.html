@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | Digital Learning Platform{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+
+  <!-- Welcome Banner -->
+  <div class="p-4 mb-4 bg-light rounded-3 shadow-sm text-center">
+    <h2 class="fw-bold text-primary">Hello, {{ session.get('username') }}!</h2>
+    <p class="text-muted fs-5">Welcome back to your Digital Learning Platform dashboard.</p>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center p-3">
+        <i class="fas fa-book fa-2x text-primary mb-2"></i>
+        <h5 class="card-title">Lessons</h5>
+        <p class="card-text fs-5">{{ stats.lessons_count|default(0) }}</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center p-3">
+        <i class="fas fa-question-circle fa-2x text-success mb-2"></i>
+        <h5 class="card-title">Quizzes</h5>
+        <p class="card-text fs-5">{{ stats.quizzes_count|default(0) }}</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center p-3">
+        <i class="fas fa-chart-line fa-2x text-warning mb-2"></i>
+        <h5 class="card-title">Progress</h5>
+        <p class="card-text fs-5">{{ stats.progress|default("0%") }}</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 text-center p-3">
+        <i class="fas fa-users fa-2x text-info mb-2"></i>
+        <h5 class="card-title">Community</h5>
+        <p class="card-text fs-5">{{ stats.forum_posts|default(0) }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Actions -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-3">
+      <a href="{{ url_for('list_content') }}" class="text-decoration-none">
+        <div class="card h-100 shadow-sm border-0 text-center p-4">
+          <i class="fas fa-book-open fa-3x text-primary mb-3"></i>
+          <h5 class="card-title">View Lessons</h5>
+          <p class="text-muted">Access offline and online learning materials</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="{{ url_for('list_quizzes') }}" class="text-decoration-none">
+        <div class="card h-100 shadow-sm border-0 text-center p-4">
+          <i class="fas fa-clipboard-list fa-3x text-success mb-3"></i>
+          <h5 class="card-title">Take Quizzes</h5>
+          <p class="text-muted">Test your knowledge and track your performance</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="{{ url_for('monitor') }}" class="text-decoration-none">
+        <div class="card h-100 shadow-sm border-0 text-center p-4">
+          <i class="fas fa-chart-pie fa-3x text-warning mb-3"></i>
+          <h5 class="card-title">Analytics</h5>
+          <p class="text-muted">Monitor your learning progress and achievements</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="{{ url_for('forum') }}" class="text-decoration-none">
+        <div class="card h-100 shadow-sm border-0 text-center p-4">
+          <i class="fas fa-comments fa-3x text-info mb-3"></i>
+          <h5 class="card-title">Community</h5>
+          <p class="text-muted">Engage with peers and teachers</p>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="row g-4 mb-4">
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0 p-4">
+        <h5 class="card-title mb-3"><i class="fas fa-chart-bar"></i> Progress Over Time</h5>
+        <canvas id="progressChart" height="200"></canvas>
+      </div>
+    </div>
+    <div class="col-lg-6">
+      <div class="card shadow-sm border-0 p-4">
+        <h5 class="card-title mb-3"><i class="fas fa-poll"></i> Quiz Performance</h5>
+        <canvas id="quizChart" height="200"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="row g-4 mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm border-0 p-4">
+        <h5 class="card-title mb-3"><i class="fas fa-history"></i> Recent Activity</h5>
+        <ul class="list-group list-group-flush">
+          {% for activity in recent_activity %}
+          <li class="list-group-item">
+            <i class="fas fa-circle-notch text-primary me-2"></i> {{ activity }}
+          </li>
+          {% else %}
+          <li class="list-group-item text-muted">No recent activity</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx1 = document.getElementById('progressChart').getContext('2d');
+  new Chart(ctx1, {
+    type: 'line',
+    data: {
+      labels: ['Week 1','Week 2','Week 3','Week 4'],
+      datasets: [{
+        label: 'Learning Progress',
+        data: [20, 40, 60, 80],
+        backgroundColor: 'rgba(54,162,235,0.2)',
+        borderColor: 'rgba(54,162,235,1)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4
+      }]
+    }
+  });
+
+  const ctx2 = document.getElementById('quizChart').getContext('2d');
+  new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: ['Quiz 1','Quiz 2','Quiz 3','Quiz 4'],
+      datasets: [{
+        label: 'Score',
+        data: [80, 70, 90, 85],
+        backgroundColor: 'rgba(255,206,86,0.7)',
+        borderColor: 'rgba(255,206,86,1)',
+        borderWidth: 1
+      }]
+    }
+  });
+</script>
+
+{% endblock %}

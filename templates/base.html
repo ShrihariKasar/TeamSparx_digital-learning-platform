@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Digital Learning Platform{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+    <!-- Your Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="{{ url_for('index') }}">
+        <i class="fas fa-graduation-cap"></i> DigiLearn Nabha
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+              data-bs-target="#navbarNav" aria-controls="navbarNav" 
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <!-- Main Navigation -->
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}"><i class="fas fa-home"></i> Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('list_content') }}"><i class="fas fa-book"></i> Content</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('list_quizzes') }}"><i class="fas fa-question-circle"></i> Quizzes</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('community_forum') }}"><i class="fas fa-users"></i> Community</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('support_home') }}"><i class="fas fa-life-ring"></i> Support</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('monitor') }}"><i class="fas fa-chart-line"></i> Monitor</a></li>
+
+          <!-- Role-Based Pages -->
+          {% if session.get('role') == 'teacher' %}
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('teacher_dashboard') }}"><i class="fas fa-chalkboard-teacher"></i> Teacher Dashboard</a></li>
+          {% endif %}
+          {% if session.get('role') == 'admin' %}
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard') }}"><i class="fas fa-cogs"></i> Admin Dashboard</a></li>
+          {% endif %}
+        </ul>
+
+        <!-- Login/Logout -->
+        <ul class="navbar-nav ms-auto">
+          {% if session.get('username') %}
+            <li class="nav-item d-flex align-items-center text-white me-3">
+              <i class="fas fa-user-circle"></i>
+              <span class="ms-2">Hi, {{ session.get('username') }}</span>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-sm btn-outline-light" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a class="btn btn-sm btn-light" href="{{ url_for('login') }}"><i class="fas fa-sign-in-alt"></i> Login</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Flash Messages -->
+  <div class="container mt-3">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for cat, msg in messages %}
+          <div class="alert alert-{{cat}} alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fas fa-info-circle"></i> {{ msg }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- Page Content -->
+  <div class="container py-4">
+    {% block content %}{% endblock %}
+  </div>
+<!-- Floating Chatbot Button -->
+<div id="chatbot" style="position: fixed; bottom: 20px; right: 20px; z-index: 1055;">
+  <button class="btn btn-primary rounded-circle p-3 shadow-lg" onclick="openChat()">
+    💬
+  </button>
+</div>
+
+<!-- Chat Modal -->
+<div class="modal fade" id="chatbotModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">DigiLearn Guide</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" style="max-height: 400px; overflow-y: auto;" id="chatBody">
+        <div class="chat-message text-muted mb-2">Hello! I’m your guide. Ask me about any section of this platform.</div>
+      </div>
+      <div class="modal-footer">
+        <input type="text" id="chatInput" class="form-control" placeholder="Type your question...">
+        <button class="btn btn-primary ms-2" onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Chatbot JS -->
+<script>
+  const chatbotResponses = {
+    "home": "Welcome to DigiLearn Nabha! Explore content, quizzes, community, and more.",
+    "dashboard": "Your Dashboard shows your progress, upcoming quizzes, and assigned content.",
+    "content": "Here you can access all learning materials. Teachers can upload new lessons here.",
+    "quizzes": "Practice with interactive quizzes. Select a quiz and submit to get instant feedback.",
+    "community": "Engage with peers, ask questions, share knowledge, and collaborate in the forum.",
+    "support": "Need help? Access FAQs, troubleshoot issues, or submit a support ticket here.",
+    "monitor": "Track your learning outcomes and progress with analytics and reports."
+  };
+
+  let chatModalInstance;
+
+  function openChat() {
+    const chatModalEl = document.getElementById('chatbotModal');
+    chatModalInstance = new bootstrap.Modal(chatModalEl);
+    chatModalInstance.show();
+
+    // Focus input after modal is shown
+    chatModalEl.addEventListener('shown.bs.modal', () => {
+      document.getElementById('chatInput').focus();
+    }, { once: true });
+  }
+
+  function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const chatBody = document.getElementById('chatBody');
+    const message = input.value.trim().toLowerCase();
+
+    if (!message) return;
+
+    // Append user message
+    chatBody.innerHTML += `<div class="chat-message text-end mb-2"><strong>You:</strong> ${input.value}</div>`;
+
+    // Determine response
+    let response = "Sorry, I can guide you on Home, Dashboard, Content, Quizzes, Community, Support, and Monitor.";
+    for (const key in chatbotResponses) {
+      if (message.includes(key)) {
+        response = chatbotResponses[key];
+        break;
+      }
+    }
+
+    // Append bot response
+    chatBody.innerHTML += `<div class="chat-message text-start mb-2"><strong>Guide:</strong> ${response}</div>`;
+    chatBody.scrollTop = chatBody.scrollHeight;
+    input.value = '';
+    input.focus();
+  }
+
+  // Press Enter to send
+  document.addEventListener('DOMContentLoaded', () => {
+    const chatInput = document.getElementById('chatInput');
+    chatInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+        e.preventDefault();
+      }
+    });
+  });
+</script>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
